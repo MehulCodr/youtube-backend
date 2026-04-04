@@ -1,9 +1,19 @@
 // require("dotenv").config(path : "./.env");
 import dotenv from "dotenv";
-import connectDB from "./db/index.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
-dotenv.config({ path: "./.env" });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: `${__dirname}/../.env` });
+
+// Initialize Cloudinary after env vars are loaded
+import { initializeCloudinary } from "./utils/cloudinary.js";
+initializeCloudinary();
+
 import { app } from "./app.js";
+import connectDB from "./db/index.js";
 
 connectDB().then(() => {
     app.on("error", (error) => {

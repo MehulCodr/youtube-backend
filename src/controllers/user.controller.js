@@ -5,8 +5,9 @@ import {uploadToCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req , res) => {
-    const {fullName, email, username, password} = req.body;
-    if([fullName, email, username, password].some((field) => field?.trim() === "")) 
+    const {fullname, email, username, password} = req.body;
+    console.log("Request body: ", req.body);
+    if([fullname, email, username, password].some((field) => field?.trim() === "")) 
     {
         throw new ApiError(400, "All fields are required");
     }
@@ -21,7 +22,7 @@ const registerUser = asyncHandler(async (req , res) => {
     }
 
     const avatarLocalPath =  req.files?.avatar[0]?.path;
-    const coverImageLocalPath =  req.files?.coverImage[0]?.path;
+    const coverImageLocalPath =  req.files?.coverImage?.[0]?.path;
 
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar file is required");
@@ -36,7 +37,7 @@ const registerUser = asyncHandler(async (req , res) => {
     }
 
     const user = await User.create({
-        fullName,
+        fullname,
         avatar : avatar.url,
         coverImage : coverImage?.url || "",
         email, 
