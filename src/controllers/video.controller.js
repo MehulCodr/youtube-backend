@@ -53,19 +53,23 @@ const publishAVideo = asyncHandler(async (req, res) => {
     if (!description?.trim()) {
         throw new ApiError(400, "Description is required");
     }
-    if (req.files?.videoFile?.[0]?.mimetype.split("/")[0] !== "video") {
+    const videoFile = req.files?.videoFile?.[0];
+    const thumbnailFile = req.files?.thumbnail?.[0];
+    
+    if (!videoFile || videoFile.mimetype.split("/")[0] !== "video") {
+        throw new ApiError(400, "Valid video file is required");
+    }
+
+    if (!thumbnailFile || thumbnailFile.mimetype.split("/")[0] !== "image") {
+        throw new ApiError(400, "Valid thumbnail is required");
+    }
+    
+    if (!videoFile || !videoFile.mimetype?.startsWith("video")) {
         throw new ApiError(400, "Invalid video file");
     }
     if (!thumbnailFile || thumbnailFile.mimetype.split("/")[0] !== "image") {
         throw new ApiError(400, "Valid thumbnail is required");
     }
-    const video = await uploadOnCloudinary(req.files?.videoFile?.[0]?.path, "video");
-    const thumbnail = await uploadOnCloudinary(req.files?.thumbnail?.[0]?.path, "image");
-    if (!video || !thumbnail) {
-        throw new ApiError(500, "File upload failed");
-    }
-    const thumbnailFile = req.files?.thumbnail?.[0];
-
     const createdVideo = await Video.create({
         title,
         description,
